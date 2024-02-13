@@ -4,6 +4,7 @@ const auth = require("../middlewares/auth.js");
 
 const router = Router();
 
+//create task
 router.post("/tasks", auth, async (req, res) => {
   try {
     const task = new Task({
@@ -17,6 +18,7 @@ router.post("/tasks", auth, async (req, res) => {
   }
 });
 
+//get the tasks with filters and pagination
 router.get("/tasks", auth, async (req, res) => {
   const match = {};
   const sort = {};
@@ -50,6 +52,7 @@ router.get("/tasks", auth, async (req, res) => {
   }
 });
 
+//get the single task
 router.get("/tasks/:id", auth, async (req, res) => {
   try {
     const taskID = req.params.id;
@@ -63,6 +66,7 @@ router.get("/tasks/:id", auth, async (req, res) => {
   }
 });
 
+//update the task
 router.patch("/tasks/:id", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowed = ["description", "completed"];
@@ -84,6 +88,7 @@ router.patch("/tasks/:id", auth, async (req, res) => {
   }
 });
 
+//delete the task
 router.delete("/tasks/:id", auth, async (req, res) => {
   try {
     const { id } = req.params;

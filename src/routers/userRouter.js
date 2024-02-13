@@ -5,6 +5,7 @@ const multer = require("../middlewares/multer.js");
 const sharp = require("sharp");
 const router = new Router();
 
+//create new user
 router.post("/users", async (req, res) => {
   const user = new User(req.body);
   try {
@@ -16,6 +17,7 @@ router.post("/users", async (req, res) => {
   }
 });
 
+//get all the users
 router.get("/users", auth, async (req, res) => {
   try {
     const users = await User.find();
@@ -25,6 +27,7 @@ router.get("/users", auth, async (req, res) => {
   }
 });
 
+//get profile info
 router.get("/users/me", auth, async (req, res) => {
   try {
     res.status(200).json({ success: true, data: req.user });
@@ -33,6 +36,7 @@ router.get("/users/me", auth, async (req, res) => {
   }
 });
 
+//get a user by ID
 router.get("/users/:id", auth, async (req, res) => {
   try {
     const userID = req.params.id;
@@ -43,6 +47,7 @@ router.get("/users/:id", auth, async (req, res) => {
   }
 });
 
+//login route
 router.post("/users/login", async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -55,6 +60,7 @@ router.post("/users/login", async (req, res) => {
   }
 });
 
+//logout route
 router.post("/users/logout", auth, async (req, res) => {
   try {
     req.user.tokens = req.user.tokens.filter((token) => {
@@ -67,6 +73,7 @@ router.post("/users/logout", auth, async (req, res) => {
   }
 });
 
+//logout all the sessions
 router.post("/users/logoutAll", auth, async (req, res) => {
   try {
     req.user.tokens = [];
@@ -77,6 +84,7 @@ router.post("/users/logoutAll", auth, async (req, res) => {
   }
 });
 
+//update the user details
 router.patch("/users/me", auth, async (req, res) => {
   const updates = Object.keys(req.body);
   const allowed = ["name", "email", "password", "age"];
@@ -94,6 +102,7 @@ router.patch("/users/me", auth, async (req, res) => {
   }
 });
 
+//upload the avatar
 router.post(
   "/users/me/avatar",
   auth,
@@ -112,6 +121,7 @@ router.post(
   }
 );
 
+//delete the avatar
 router.delete(
   "/users/me/avatar",
   auth,
@@ -125,6 +135,7 @@ router.delete(
   }
 );
 
+//see the avatar
 router.get("/users/:id/avatar", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -138,6 +149,7 @@ router.get("/users/:id/avatar", async (req, res) => {
   }
 });
 
+//delete the account
 router.delete("/users/me", auth, async (req, res) => {
   try {
     await req.user.deleteOne();

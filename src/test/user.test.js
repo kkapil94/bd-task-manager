@@ -49,14 +49,14 @@ test("should not login a non-existing user", async () => {
 
 test("should pass the auth", async () => {
   await request(app)
-    .post("/users/logout")
+    .get("/users/me")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200);
 });
 
 test("should not pass the un-auth", async () => {
-  await request(app).post("/users/logout").send().expect(401);
+  await request(app).get("/users/me").send().expect(401);
 });
 
 test("should delete the user", async () => {
@@ -65,7 +65,7 @@ test("should delete the user", async () => {
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200);
-  const user = await User.findById(response._body.data._id);
+  const user = await User.findById(userId);
   expect(user).toBeNull();
 });
 
@@ -73,6 +73,7 @@ test("should upload the avatar", async () => {
   const response = await request(app)
     .post("/users/me/avatar")
     .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
-    .attach("avatar", "/fixtures/sign.jpg")
+    .set("Content-Type", "multipart/form-data")
+    .attach("avatar", "test/fixtures/sign.jpg")
     .expect(200);
 });
