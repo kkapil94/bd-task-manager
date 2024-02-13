@@ -1,22 +1,9 @@
 const request = require("supertest");
 const app = require("../../src/app.js");
 const User = require("../models/userModel.js");
-const jwt = require("jsonwebtoken");
-const mongoose = require("mongoose");
+const { setUpDatabase, userId, userOne } = require("./fixtures/db.js");
 
-const userId = new mongoose.Types.ObjectId();
-const userOne = {
-  _id: userId,
-  name: "Kapil",
-  email: "test@gamil.com",
-  password: "123456789",
-  tokens: [{ token: jwt.sign({ _id: userId }, process.env.JWT_SECRET) }],
-};
-
-beforeEach(async () => {
-  await User.deleteMany();
-  await new User(userOne).save();
-});
+beforeEach(setUpDatabase);
 
 test("should signup a user", async () => {
   const response = await request(app)
@@ -27,7 +14,6 @@ test("should signup a user", async () => {
       password: "123456789",
     })
     .expect(201);
-  console.log(response);
   const user = await User.findById(response._body.data._id);
   expect(user).not.toBeNull();
   expect(response._body).toMatchObject({
@@ -81,4 +67,12 @@ test("should delete the user", async () => {
     .expect(200);
   const user = await User.findById(response._body.data._id);
   expect(user).toBeNull();
+});
+
+test("should upload the avatar", async () => {
+  const response = await request(app)
+    .post("/users/me/avatar")
+    .set("Authorization", `Bearer ${userOne.tokens[0].token}`)
+    .attach("avatar", "/fixtures/sign.jpg")
+    .expect(200);
 });

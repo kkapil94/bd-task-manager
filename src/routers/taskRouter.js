@@ -83,4 +83,20 @@ router.patch("/tasks/:id", auth, async (req, res) => {
     res.status(500).json({ success: false, data: [] });
   }
 });
+
+router.delete("/tasks/:id", auth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      return res.status(404).json({ success: false, task: null });
+    }
+    const task = await Task.findOneAndDelete({ _id: id, owner: req.user._id });
+    if (!task) {
+      return res.status(404).json({ success: false, task: null });
+    }
+    res.status(200).json({ success: true, task });
+  } catch (error) {
+    res.status(500).json({ success: false, task: null });
+  }
+});
 module.exports = router;
